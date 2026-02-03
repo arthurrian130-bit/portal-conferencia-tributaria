@@ -32,6 +32,9 @@ app = Flask(__name__)
 app.config["PORTAL_TITLE"] = os.getenv("PORTAL_TITLE", "Portal de Conferência Tributária")
 app.config["SIMPLES_URL"] = os.getenv("SIMPLES_URL", "https://simplesdash.manus.space")
 app.config["IRPJ_URL"] = os.getenv("IRPJ_URL", "https://calc-fiscal-2etwmuhb.manus.space/")
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 def get_modules():
