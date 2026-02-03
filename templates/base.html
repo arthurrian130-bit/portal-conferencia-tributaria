@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ portal_title }}</title>
+  {% if preconnect_origins %}
+    {% for origin in preconnect_origins %}
+      <link rel="preconnect" href="{{ origin }}">
+    {% endfor %}
+  {% endif %}
+  {% if dns_prefetch_hosts %}
+    {% for host in dns_prefetch_hosts %}
+      <link rel="dns-prefetch" href="{{ host }}">
+    {% endfor %}
+  {% endif %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">CT</div>
+        <div class="brand-text">
+          <div class="brand-title">{{ portal_title }}</div>
+          <div class="brand-subtitle">Acesso rápido aos módulos tributários</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+</html>

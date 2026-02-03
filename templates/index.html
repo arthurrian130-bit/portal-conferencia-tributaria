@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero hero-center">
+    <h1 class="hero-title">{{ portal_title }}</h1>
+    <p class="hero-subtitle">Selecione o módulo desejado</p>
+  </section>
+
+  <section class="sector-grid">
+    {% for m in modules %}
+      {% set variant = loop.index0 % 3 %}
+      <a class="sector-card sector-card-link variant-{{ variant }}"
+         href="{{ url_for('go', module_id=m['id']) }}"
+         data-module-url="{{ m['url'] }}">
+        <div class="sector-card-top">
+          <div class="sector-icon" aria-hidden="true">
+            {% if variant == 0 %}
+              <svg viewBox="0 0 64 64" role="img" focusable="false">
+                <rect x="14" y="10" width="36" height="44" rx="6"></rect>
+                <rect x="22" y="18" width="20" height="6" rx="3"></rect>
+                <circle cx="24" cy="32" r="3"></circle>
+                <circle cx="32" cy="32" r="3"></circle>
+                <circle cx="40" cy="32" r="3"></circle>
+                <circle cx="24" cy="40" r="3"></circle>
+                <circle cx="32" cy="40" r="3"></circle>
+                <circle cx="40" cy="40" r="3"></circle>
+              </svg>
+            {% elif variant == 1 %}
+              <svg viewBox="0 0 64 64" role="img" focusable="false">
+                <path d="M18 10h20l12 12v32a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z"></path>
+                <path d="M38 10v12h12"></path>
+                <rect x="22" y="30" width="20" height="4" rx="2"></rect>
+                <rect x="22" y="38" width="16" height="4" rx="2"></rect>
+              </svg>
+            {% else %}
+              <svg viewBox="0 0 64 64" role="img" focusable="false">
+                <circle cx="26" cy="26" r="10"></circle>
+                <circle cx="44" cy="24" r="8"></circle>
+                <path d="M10 52c0-10 8-18 18-18s18 8 18 18"></path>
+                <path d="M34 52c0-7 6-12 14-12"></path>
+              </svg>
+            {% endif %}
+          </div>
+        </div>
+        <div class="sector-card-body">
+          <h2 class="sector-title">{{ m["name"] }}</h2>
+          {% if m["description"] %}
+            <p class="sector-subtitle">{{ m["description"] }}</p>
+          {% endif %}
+          <div class="sector-actions">
+            <span class="sector-link">Acessar setor <span aria-hidden="true">›</span></span>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </section>
+
+{% endblock %}
