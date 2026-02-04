@@ -1,2 +1,5 @@
 flask>=3.0,<4.0
 gunicorn
+pytest
+ruff
+Flask-Compress

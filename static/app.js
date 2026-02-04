@@ -38,3 +38,24 @@ function warmupModuleLinks() {
 }
 
 document.addEventListener("DOMContentLoaded", warmupModuleLinks);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll(".btn-primary[data-go]");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.getAttribute("data-go");
+      if (!target) return;
+      if (button.disabled) return;
+      const original = button.textContent || "";
+      button.textContent = "Redirecionando…";
+      button.disabled = true;
+      setTimeout(() => {
+        window.location.href = target;
+      }, 150);
+      setTimeout(() => {
+        button.textContent = original;
+        button.disabled = false;
+      }, 1000);
+    });
+  });
+});

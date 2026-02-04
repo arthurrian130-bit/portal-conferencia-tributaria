@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero">
+    <span class="hero-badge">Ajuda</span>
+    <h1 class="hero-title">Como usar</h1>
+    <p class="hero-subtitle">
+      Clique em um card para abrir o módulo em uma nova página.
+    </p>
+  </section>
+
+  <section class="content-grid">
+    <div class="content-card">
+      <h2 class="h2">Dicas rápidas</h2>
+      <ul class="list">
+        <li>Use o botão “voltar” do navegador para retornar ao portal.</li>
+        <li>Se o módulo demorar, aguarde alguns segundos (cold start).</li>
+        <li>Ambiente pode ser configurado via variáveis.</li>
+      </ul>
+    </div>
+    <div class="content-card">
+      <h2 class="h2">Suporte</h2>
+      <p class="muted">
+        Em caso de problemas, verifique as URLs dos módulos e as variáveis
+        de ambiente configuradas no deploy.
+      </p>
+    </div>
+  </section>
+{% endblock %}

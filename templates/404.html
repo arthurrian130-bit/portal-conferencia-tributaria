@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero hero-center">
+    <span class="hero-badge">404</span>
+    <h1 class="hero-title">Página não encontrada</h1>
+    <p class="hero-subtitle">O conteúdo solicitado não existe ou foi movido.</p>
+    <div class="btns center">
+      <a class="btn primary" href="{{ url_for('index') }}">Voltar para o portal</a>
+    </div>
+  </section>
+{% endblock %}

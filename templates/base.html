@@ -3,7 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>{{ portal_title }}</title>
+  <title>{% if page_title %}{{ page_title }} • {{ portal_title }}{% else %}{{ portal_title }}{% endif %}</title>
+  <meta name="description" content="{{ portal_description or '' }}">
+  <meta property="og:title" content="{% if page_title %}{{ page_title }} • {{ portal_title }}{% else %}{{ portal_title }}{% endif %}">
+  <meta property="og:description" content="{{ portal_description or '' }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.url }}">
+  <meta property="og:image" content="{{ url_for('static', filename='favicon.svg', _external=True) }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='img/bg-wave.svg') }}">
   {% if preconnect_origins %}
     {% for origin in preconnect_origins %}
       <link rel="preconnect" href="{{ origin }}">
@@ -21,11 +29,21 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
-        <div class="brand-mark">CT</div>
         <div class="brand-text">
           <div class="brand-title">{{ portal_title }}</div>
           <div class="brand-subtitle">Acesso rápido aos módulos tributários</div>
         </div>
+      </div>
+      <div class="nav-area">
+        <span class="status-badge" aria-label="Status online">
+          <span class="status-dot" aria-hidden="true"></span>
+          Online
+        </span>
+      <nav class="nav">
+          <a class="nav-link" href="{{ url_for('index') }}">Início</a>
+          <a class="nav-link" href="{{ url_for('about') }}">Sobre</a>
+          <a class="nav-link" href="{{ url_for('help_page') }}">Ajuda</a>
+      </nav>
       </div>
     </div>
   </header>
@@ -33,6 +51,13 @@
   <main class="container">
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Portal stateless • sem histórico</span>
+      <span>v2</span>
+    </div>
+  </footer>
 
 </body>
 </html>

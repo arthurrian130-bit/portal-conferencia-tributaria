@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero hero-center">
+    <span class="hero-badge">500</span>
+    <h1 class="hero-title">Erro interno</h1>
+    <p class="hero-subtitle">Ocorreu um problema inesperado. Tente novamente.</p>
+    <div class="btns center">
+      <a class="btn primary" href="{{ url_for('index') }}">Voltar para o portal</a>
+    </div>
+  </section>
+{% endblock %}

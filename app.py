@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flask import Flask, abort, redirect, render_template
+from flask import Flask, abort, jsonify, redirect, render_template, request
+
+try:
+    from flask_compress import Compress
+except Exception:  # pragma: no cover - optional in some envs
+    Compress = None  # type: ignore[assignment]
 
 
 def load_dotenv(path: str = ".env") -> None:
@@ -27,14 +33,20 @@ def load_dotenv(path: str = ".env") -> None:
 
 
 load_dotenv()
+load_dotenv("config.env")
 
 app = Flask(__name__)
 app.config["PORTAL_TITLE"] = os.getenv("PORTAL_TITLE", "Portal de Conferência Tributária")
+app.config["PORTAL_DESCRIPTION"] = os.getenv(
+    "PORTAL_DESCRIPTION",
+    "Portal stateless para acesso rápido aos módulos tributários.",
+)
 app.config["SIMPLES_URL"] = os.getenv("SIMPLES_URL", "https://simplesdash.manus.space")
 app.config["IRPJ_URL"] = os.getenv("IRPJ_URL", "https://calc-fiscal-2etwmuhb.manus.space/")
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
+app.config["APP_ENV"] = os.getenv("APP_ENV", "production")
+app.config["COMPRESS_ALGORITHM"] = "gzip"
+app.config["COMPRESS_MIN_SIZE"] = 512
 
 
 def get_modules():
@@ -67,6 +79,18 @@ def _get_preconnect_hints(modules):
             dns_hosts.add(f"//{parsed.netloc}")
     return sorted(origins), sorted(dns_hosts)
 
+def _configure_logging() -> None:
+    logging.basicConfig(
+        level=os.getenv("LOG_LEVEL", "INFO").upper(),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
+
+
+_configure_logging()
+
+if Compress is not None:
+    Compress(app)
+
 
 @app.get("/")
 def index():
@@ -75,9 +99,30 @@ def index():
     return render_template(
         "index.html",
         portal_title=app.config["PORTAL_TITLE"],
+        portal_description=app.config["PORTAL_DESCRIPTION"],
         modules=modules,
         preconnect_origins=preconnect_origins,
         dns_prefetch_hosts=dns_prefetch_hosts,
+    )
+
+
+@app.get("/about")
+def about():
+    return render_template(
+        "about.html",
+        portal_title=app.config["PORTAL_TITLE"],
+        portal_description=app.config["PORTAL_DESCRIPTION"],
+        page_title="Sobre",
+    )
+
+
+@app.get("/help")
+def help_page():
+    return render_template(
+        "help.html",
+        portal_title=app.config["PORTAL_TITLE"],
+        portal_description=app.config["PORTAL_DESCRIPTION"],
+        page_title="Ajuda",
     )
 
 
@@ -88,6 +133,58 @@ def go(module_id: str):
     if not module:
         abort(404)
     return redirect(module["url"])
+
+@app.get("/health")
+def health():
+    return jsonify({"status": "ok"})
+
+
+@app.errorhandler(404)
+def not_found(_error):
+    return (
+        render_template(
+            "404.html",
+            portal_title=app.config["PORTAL_TITLE"],
+            portal_description=app.config["PORTAL_DESCRIPTION"],
+            page_title="Página não encontrada",
+        ),
+        404,
+    )
+
+
+@app.errorhandler(500)
+def internal_error(_error):
+    return (
+        render_template(
+            "500.html",
+        portal_title=app.config["PORTAL_TITLE"],
+            portal_description=app.config["PORTAL_DESCRIPTION"],
+            page_title="Erro interno",
+        ),
+        500,
+    )
+
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "img-src 'self' data:; "
+        "style-src 'self'; "
+        "script-src 'self'; "
+        "base-uri 'self'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none'"
+    )
+    if request.path.startswith("/static/"):
+        if app.config["APP_ENV"].lower() == "development":
+            response.headers.setdefault("Cache-Control", "no-store")
+        else:
+            response.headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
+    return response
 
 
 if __name__ == "__main__":
