@@ -28,6 +28,7 @@ Acesse:
 - `PORTAL_TITLE` (default: "Portal de Conferência Tributária")
 - `SIMPLES_URL` (default: `https://simplesdash.manus.space`)
 - `IRPJ_URL` (default: `https://calc-fiscal-2etwmuhb.manus.space/`)
+- `PIS_COFINS_URL` (default: `https://dashpiscofins.manus.space`)
 
 Exemplo PowerShell:
 ```powershell
@@ -71,7 +72,8 @@ Este repositório inclui `render.yaml` para auto deploy. Basta conectar o repo n
 
 ## Endpoints
 - `/` Home
-- `/go/<id>` redireciona para o módulo (`simples` e `irpj_csll`)
+- `/go/<id>` redireciona para o módulo (`simples`, `irpj_csll`, `pis_cofins`)
+- `PIS_COFINS_URL` pode apontar para um dashboard externo (ex.: `https://dashpiscofins.manus.space`)
 - `/about` Sobre
 - `/help` Ajuda
 - `/health` JSON de status

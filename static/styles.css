@@ -39,9 +39,9 @@ body::before{
 }
 
 .container{
-  max-width: 1080px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 18px;
 }
 
 .topbar{
@@ -172,9 +172,10 @@ main,
 
 .sector-grid{
   display:grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
   margin: 22px 0 26px;
+  justify-items: stretch;
 }
 
 .sector-card{
@@ -185,6 +186,7 @@ main,
   box-shadow: var(--shadow);
   display:flex;
   flex-direction: column;
+  height: 100%;
 }
 .sector-card-link{
   text-decoration: none;
@@ -203,13 +205,13 @@ main,
   outline-offset: 4px;
 }
 .sector-card-top{
-  height: 100px;
+  height: 92px;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .sector-card-body{
-  padding: 18px 20px 20px;
+  padding: 16px 18px 18px;
   background: var(--panel);
   display:flex;
   flex-direction: column;
@@ -339,8 +341,12 @@ main,
   .sector-card-top{ height: 110px; }
 }
 
-@media (min-width: 900px){
+@media (max-width: 1100px){
   .sector-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px){
+  .sector-grid{ grid-template-columns: 1fr; }
 }
 
 @media (max-width: 900px){

@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flask import Flask, abort, jsonify, redirect, render_template, request
+from flask import Flask, abort, jsonify, redirect, render_template, request, send_from_directory
 
 try:
     from flask_compress import Compress
@@ -43,6 +43,7 @@ app.config["PORTAL_DESCRIPTION"] = os.getenv(
 )
 app.config["SIMPLES_URL"] = os.getenv("SIMPLES_URL", "https://simplesdash.manus.space")
 app.config["IRPJ_URL"] = os.getenv("IRPJ_URL", "https://calc-fiscal-2etwmuhb.manus.space/")
+app.config["PIS_COFINS_URL"] = os.getenv("PIS_COFINS_URL", "https://dashpiscofins.manus.space")
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
 app.config["APP_ENV"] = os.getenv("APP_ENV", "production")
 app.config["COMPRESS_ALGORITHM"] = "gzip"
@@ -63,7 +64,22 @@ def get_modules():
             "description": "Dashboard de cálculo/conferência de IRPJ e CSLL.",
             "url": app.config["IRPJ_URL"],
         },
+        {
+            "id": "pis_cofins",
+            "name": "PIS + COFINS",
+            "description": "Calculadora cumulativa de PIS e COFINS (Lucro Presumido).",
+            "url": app.config["PIS_COFINS_URL"],
+        },
     ]
+
+
+def _pis_cofins_dist_dir() -> Path:
+    return (
+        Path(__file__).resolve().parent
+        / "Calculadora PIS e COFINS"
+        / "client"
+        / "dist"
+    )
 
 def _get_preconnect_hints(modules):
     origins = set()
@@ -133,6 +149,28 @@ def go(module_id: str):
     if not module:
         abort(404)
     return redirect(module["url"])
+
+
+@app.get("/pis-cofins")
+def pis_cofins_index():
+    dist_dir = _pis_cofins_dist_dir()
+    index_file = dist_dir / "index.html"
+    if not index_file.exists():
+        return (
+            "Dashboard PIS/COFINS não foi compilado. "
+            "Execute `pnpm install` e `pnpm build` em "
+            "`Calculadora PIS e COFINS/client`.",
+            503,
+        )
+    return send_from_directory(dist_dir, "index.html")
+
+
+@app.get("/pis-cofins/<path:asset_path>")
+def pis_cofins_assets(asset_path: str):
+    dist_dir = _pis_cofins_dist_dir()
+    if not dist_dir.exists():
+        abort(404)
+    return send_from_directory(dist_dir, asset_path)
 
 @app.get("/health")
 def health():
